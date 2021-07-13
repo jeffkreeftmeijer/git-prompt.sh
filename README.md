@@ -29,20 +29,32 @@ terminal prompt.
 
 ## Contributing
 
+git-prompt.sh uses [git-filter-repo](https://github.com/newren/git-filter-repo) because [`git-filter-branch` is slow and dangerous](https://jeffkreeftmeijer.com/git-extract/).
+Install it with a [package manager](https://github.com/newren/git-filter-repo/blob/main/INSTALL.md). On a Mac, use Homebrew:
+
+    $ brew install git-filter-repo
+
 ### Initial extraction
 
     git clone git@github.com:git/git.git git-prompt.sh
     cd git-prompt.sh
-    git filter-branch --force --prune-empty --subdirectory-filter contrib/completion
-    git remote rename origin upstream
-    git branch -m upstream
-    git checkout -b master
-
-### Updating git-prompt.sh to upstream master
-
-    git checkout upstream
-    git fetch
+    git filter-repo --force --subdirectory-filter contrib/completion
+    git remote add origin git@github.com:jeffkreeftmeijer/git-prompt.sh.git
+    git checkout -b main
+    git push origin main
+ 
+ ### Updating git-prompt.sh to upstream master
+ 
+    git clone git@github.com:jeffkreeftmeijer/git-prompt.sh.git
+    cd git-prompt.sh
+    git checkout -b upstream
+    git remote add upstream git@github.com:git/git.git
+    git fetch upstream
     git reset --hard upstream/master
-    git filter-branch --force --prune-empty --subdirectory-filter contrib/completion
-    git checkout master
-    git rebase --onto upstream master~3 master
+    git filter-repo --force --subdirectory-filter contrib/completion
+    git filter-repo --path git-prompt.sh
+    git remote add origin git@github.com:jeffkreeftmeijer/git-prompt.sh.git
+    git checkout -b main
+    git fetch main
+    git reset --hard origin/main
+    git rebase --onto upstream main~3 main
